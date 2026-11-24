@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>田里认草 · 华南杂草与作物识别</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;background:#eef3ee;color:#1d2a22;font-size:15px;line-height:1.6;padding-bottom:78px}
+header{background:linear-gradient(135deg,#2c7a4b 0%,#4fa35f 55%,#7bbd6a 100%);color:#fff;padding:20px 20px 24px;border-radius:0 0 22px 22px;box-shadow:0 6px 20px rgba(44,122,75,.22)}
+header h1{margin:0;font-size:20px;letter-spacing:.5px;font-weight:700}
+header p{margin:6px 0 0;font-size:12.5px;opacity:.9}
+.wrap{max-width:640px;margin:0 auto;padding:0 14px}
+.card{background:#fff;border-radius:16px;padding:16px;margin-top:14px;box-shadow:0 2px 10px rgba(30,60,40,.07)}
+.sect-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sect-title b{font-size:14.5px}
+.sect-title span{font-size:12px;color:#8a9a8f}
+#drop{border:2px dashed #b9d3bf;border-radius:16px;background:#f6faf6;padding:24px 14px;text-align:center;cursor:pointer}
+#drop:active{background:#eaf5ec;border-color:#4fa35f}
+#drop .ico{font-size:32px;line-height:1}
+#drop .t1{font-size:14.5px;margin-top:8px;font-weight:600;color:#2c7a4b}
+#drop .t2{font-size:12px;color:#8a9a8f;margin-top:4px}
+#drop .t3{font-size:11.5px;color:#b8562c;margin-top:8px;background:#fdf1e8;border-radius:8px;padding:6px 9px;display:inline-block;line-height:1.55}
+#drop .t3{max-width:100%}
+#prevBox{display:none;position:relative;border-radius:14px;overflow:hidden;background:#0d1410}
+#prev{display:block;width:100%;max-height:300px;object-fit:contain}
+#prevBox .again{position:absolute;right:10px;bottom:10px;background:rgba(255,255,255,.92);color:#2c7a4b;font-size:12px;padding:6px 12px;border-radius:999px;font-weight:600}
+.feats{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.feat{font-size:11.5px;background:#f1f7f2;color:#3f6b4f;border-radius:8px;padding:4px 9px}
+.feat.hi{background:#fff3e2;color:#a86a12;font-weight:600}
+.label{font-size:12.5px;color:#6d7f73;margin:14px 0 8px;font-weight:600}
+.label:first-child{margin-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:13px;padding:7px 13px;border-radius:999px;background:#f2f6f2;color:#456052;border:1px solid #e2ece4;cursor:pointer;user-select:none}
+.chip.on{background:#2c7a4b;color:#fff;border-color:#2c7a4b;box-shadow:0 2px 8px rgba(44,122,75,.25)}
+.btn{display:block;width:100%;border:0;border-radius:14px;padding:14px;font-size:15.5px;font-weight:700;color:#fff;cursor:pointer;margin-top:18px;background:linear-gradient(135deg,#2c7a4b,#57ab63);box-shadow:0 6px 16px rgba(44,122,75,.26)}
+.btn:active{transform:scale(.99);opacity:.92}
+.btn.ghost{background:#fff;color:#2c7a4b;border:1.5px solid #b9d3bf;box-shadow:none;font-weight:600;font-size:14px}
+#result{display:none}
+.cropbox{background:linear-gradient(135deg,#b8562c,#e08a2b);color:#fff;border-radius:16px;padding:16px;margin-top:12px;box-shadow:0 6px 18px rgba(184,86,44,.28)}
+.cropbox .k{font-size:11.5px;opacity:.85;letter-spacing:2px}
+.cropbox .n{font-size:21px;font-weight:700;margin:6px 0 2px}
+.cropbox .s{font-size:12px;opacity:.92}
+.cropbox .why{background:rgba(255,255,255,.16);border-radius:10px;padding:9px 11px;font-size:12.5px;margin-top:10px;line-height:1.65}
+.hit{background:#fff;border-radius:16px;padding:15px;margin-top:12px;box-shadow:0 2px 10px rgba(30,60,40,.07)}
+.hit .hd{display:flex;align-items:flex-start;gap:10px}
+.rk{width:26px;height:26px;flex:0 0 26px;border-radius:9px;background:#eef5ef;color:#2c7a4b;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.rk.g1{background:#2c7a4b;color:#fff}
+.rk.g2{background:#7bbd6a;color:#fff}
+.hit .nm{font-size:17px;font-weight:700;letter-spacing:.3px}
+.hit .sub{font-size:11.5px;color:#8a9a8f;margin-top:2px}
+.score{margin-left:auto;text-align:right;flex:0 0 auto}
+.score .v{font-size:17px;font-weight:700;color:#e08a2b}
+.score .l{font-size:10.5px;color:#a8b5ac}
+.bar{height:5px;background:#eef2ee;border-radius:99px;margin:10px 0 12px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#7bbd6a,#2c7a4b);border-radius:99px}
+.row{font-size:13px;color:#33443a;margin:7px 0;line-height:1.68}
+.row b{color:#2c7a4b;font-weight:600}
+.tag{display:inline-block;font-size:11px;background:#eef5ef;color:#3f6b4f;border-radius:7px;padding:2px 7px;margin-right:5px}
+.empty{text-align:center;color:#8a9a8f;font-size:13px;padding:22px 0}
+.search{width:100%;border:1.5px solid #e2ece4;background:#f7faf7;border-radius:12px;padding:11px 14px;font-size:14px;outline:none;font-family:inherit}
+.search:focus{border-color:#7bbd6a;background:#fff}
+#list{margin-top:10px}
+.item{background:#fff;border-radius:14px;padding:13px 15px;margin-top:10px;cursor:pointer;box-shadow:0 1px 6px rgba(30,60,40,.06)}
+.item .n{font-size:15px;font-weight:700;display:flex;align-items:center;gap:7px}
+.item .f{font-size:11px;color:#8a9a8f;font-weight:400}
+.item .cropmark{font-size:10.5px;background:#fdeee4;color:#b8562c;border-radius:6px;padding:1px 6px;font-weight:600}
+.item .d{font-size:12px;color:#6d7f73;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.detail{display:none;margin-top:10px;border-top:1px dashed #e2ece4;padding-top:10px}
+.item.open .detail{display:block}
+.key h3{font-size:14.5px;margin:16px 0 8px;color:#2c7a4b}
+.key p{font-size:13px;color:#3a4a40;margin:7px 0;line-height:1.72}
+.key .q{background:#f6faf6;border-left:3px solid #7bbd6a;border-radius:0 8px 8px 0;padding:8px 11px;margin:8px 0;font-size:13px;color:#3a4a40;line-height:1.72}
+.key .q b{color:#2c7a4b}
+nav{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);display:flex;border-top:1px solid #e7efe9;z-index:20;padding-bottom:env(safe-area-inset-bottom)}
+nav a{flex:1;text-align:center;padding:9px 0 10px;font-size:11.5px;color:#98a89c;text-decoration:none;font-weight:600}
+nav a .i{display:block;font-size:18px;line-height:1.35}
+nav a.act{color:#2c7a4b}
+.page{display:none}
+.page.act{display:block}
+.note{font-size:11.5px;color:#9aa9a0;line-height:1.6;text-align:center;margin:16px 6px 4px}
+.kq{background:#fff;border:1.5px solid #d8e6dc;border-radius:16px;padding:14px 15px;margin-top:14px;box-shadow:0 2px 10px rgba(30,60,40,.07)}
+.kq .t{font-size:12px;letter-spacing:1px;color:#8aa294;font-weight:700}
+.kq .q{font-size:14px;color:#22402f;line-height:1.7;margin-top:7px;font-weight:600}
+.kq .bt{display:flex;gap:9px;margin-top:12px}
+.kq .bt button{flex:1;margin-top:0;font-size:13px;padding:11px 0}
+.btn.sm{font-size:13px;padding:11px 0;border-radius:12px}
+.kq .h{font-size:11.5px;color:#93a49a;line-height:1.6;margin-top:9px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>🌿 田里认草 v2</h1>
+    <p>华南杂草 + 作物识别 · 分层判定 · 全程离线</p>
+  </div>
+</header>
+
+<div class="page act" id="page-id">
+  <div class="wrap">
+    <div class="card">
+      <div id="drop">
+        <div class="ico">📷</div>
+        <div class="t1">拍照 / 上传照片</div>
+        <div class="t2">单株全草、叶片特写、田块全景都可以</div>
+        <div class="t3">想更准：背景干净、单株居中拍；禾本科再补一张叶鞘口（叶舌）特写</div>
+      </div>
+      <div id="prevBox">
+        <img id="prev" alt="">
+        <div class="again" id="again">换一张</div>
+      </div>
+      <div class="feats" id="feats"></div>
+      <input type="file" id="file" accept="image/*" style="display:none">
+    </div>
+
+    <div class="card">
+      <div class="sect-title"><b>核对特征（勾得越准越准）</b><span>可多选</span></div>
+      <div class="label">叶形</div>
+      <div class="chips" id="c-shape"></div>
+      <div class="label">叶缘</div>
+      <div class="chips" id="c-edge"></div>
+      <div class="label">叶脉</div>
+      <div class="chips" id="c-vein"></div>
+      <div class="label">花 / 花序颜色</div>
+      <div class="chips" id="c-fl"></div>
+      <div class="label">生境</div>
+      <div class="chips" id="c-hab"></div>
+      <div class="label">株型</div>
+      <div class="chips" id="c-stem"></div>
+      <div class="label">关键细节</div>
+      <div class="chips" id="c-tag"></div>
+      <button class="btn" id="go">开始识别</button>
+      <button class="btn ghost" id="reset" style="margin-top:10px">清空重来</button>
+    </div>
+
+    <div id="result"></div>
+    <div class="note">图像特征为本地计算，不上传照片。<br>结果作田间初筛，定论请以叶舌、叶耳、花序实物为准。</div>
+  </div>
+</div>
+
+<div class="page" id="page-list">
+  <div class="wrap">
+    <div class="card" style="margin-top:16px">
+      <input class="search" id="q" placeholder="搜索名称 / 别名 / 科属，如：稗、水稻、禾本科">
+      <div class="chips" id="c-cat" style="margin-top:10px"></div>
+    </div>
+    <div id="list"></div>
+    <div class="note">共收录 <span id="cnt"></span> 条：杂草 + 常见作物</div>
+  </div>
+</div>
+
+<div class="page" id="page-key">
+  <div class="wrap">
+    <div class="card key" style="margin-top:16px">
+      <h3>① 禾本科（禾草）：先看叶舌叶耳</h3>
+      <div class="q"><b>叶舌</b>：叶鞘口内侧的膜状或毛状附属物，手指沿叶鞘往上推能摸到。<br>
+      稗草 = <b>无叶舌</b>（叶鞘口光滑）；千金子、马唐、牛筋草、狗尾草、看麦娘、早熟禾、双穗雀稗 = <b>有膜质叶舌</b>。</div>
+      <div class="q"><b>叶耳</b>：叶鞘口两侧爪状、抱茎的附属物。<br>
+      <b>水稻、小麦有叶耳</b>；稗草、千金子、马唐<b>都没有叶耳</b>。这是稻田"稗草 vs 水稻"最关键的一刀。</div>
+      <div class="q"><b>叶鞘与茎</b>：牛筋草茎基部扁压、坚韧极难拔；马唐叶鞘带疣毛和紫红色、节部易生根；狗牙根、双穗雀稗、李氏禾匍匐贴地、节节生根。</div>
+      <div class="q"><b>花序</b>：指状排列 → 马唐、牛筋草、狗牙根；圆柱状紧缩 → 狗尾草、看麦娘；圆锥开展 → 稗草、千金子、早熟禾；两枚总状对生成"V" → 双穗雀稗；大型白穗 → 白茅、五节芒。</div>
+
+      <h3>② 稻田里的"稗草 vs 水稻"</h3>
+      <p><b>稗草</b>：无叶舌无叶耳、叶鞘较扁、茎基部常红褐、分蘖松散、抽穗通常早于水稻、小穗常有芒、穗枝下垂。</p>
+      <p><b>水稻</b>：有膜质叶舌 + 明显叶耳、叶片中脉不如稗草发白、株行整齐成片、穗直立。</p>
+
+      <h3>③ 莎草科</h3>
+      <p>茎<b>三棱形</b>、叶线形、无叶舌、叶鞘闭合。<b>香附子</b>地下有硬块茎、伞形花序分枝长；<b>异型莎草</b>一年生、无块茎、小穗聚成球状。</p>
+
+      <h3>④ 阔叶草</h3>
+      <p>叶脉<b>网状</b>，与禾草、莎草的<b>平行脉</b>一眼分开。菊科看头状花序：蒲公英、苦苣菜开黄花且有乳汁；小飞蓬、一年蓬舌状花白色细小；胜红蓟蓝紫色密集成伞房。</p>
+
+      <h3>⑤ 判断"这是不是作物"</h3>
+      <p>三个信号同时出现，基本就是作物：<b>成行成片、株型整齐一致</b> ＋ <b>有叶舌叶耳（禾谷类）或叶柄明显、叶面光滑（蔬菜类）</b> ＋ <b>没有野生分枝、匍匐茎或块茎</b>。零星散生、株型杂乱、节部随处生根，更像杂草。</p>
+    </div>
+    <div class="note">这份检索表说明判断依据，不替代田间实物核对。</div>
+  </div>
+</div>
+
+<nav>
+  <a href="#" class="act" data-p="id"><span class="i">🔍</span>识别</a>
+  <a href="#" data-p="key"><span class="i">🔑</span>检索表</a>
+  <a href="#" data-p="list"><span class="i">📖</span>名录</a>
+</nav>
+
+<script>
+/* 字段：n名称 a别名 f科 c类群(禾/莎/阔/菊/作) h生境 s叶形 e叶缘 v叶脉 fl花色
+   st株型 g关键特征 tr[细长,占据,叶缘,纹理,绿色,明度] key要点 dif区分 mg防除或确认要点 */
+var DB = [
+{n:'稗草',a:'稗、稗子',f:'禾本科',c:'禾',h:['水田','湿地','路边'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'直立丛生',g:['无叶舌','圆锥花序','小穗有芒'],
+ tr:[.78,.52,.26,.55,.80,.55],
+ key:'叶片线形、柔软，叶鞘光滑无毛，无叶舌；圆锥花序主轴直立或下垂，小穗常有芒。稻田最难防的禾本科杂草。',
+ dif:'与水稻：稗草无叶舌、无叶耳，水稻两者都有。与千金子：稗草无叶舌、小穗有芒；千金子叶舌膜质、小穗极小。',
+ mg:'水稻 2~3 叶期前丙草胺封闭；茎叶期五氟磺草胺、氰氟草酯，按叶龄用药。'},
+{n:'千金子',a:'千金子草',f:'禾本科',c:'禾',h:['水田','湿地'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'直立丛生',g:['有叶舌','小穗细小','无叶耳'],
+ tr:[.83,.50,.23,.45,.78,.55],
+ key:'叶片线形较软，叶舌膜质；圆锥花序多分枝开展，小穗极小成对排列。喜湿润，稻田和田埂常见。',
+ dif:'与稗草：千金子有叶舌、小穗细小无长芒；稗草无叶舌、小穗有芒。两者都无叶耳，都与水稻不同。',
+ mg:'湿润育秧田丙草胺封闭；茎叶期氰氟草酯、噁唑酰草胺，分蘖前用药。'},
+{n:'双穗雀稗',a:'水稗',f:'禾本科',c:'禾',h:['水田','湿地','路边'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'匍匐',g:['匍匐茎','总状花序对生','有叶舌'],
+ tr:[.70,.55,.20,.40,.80,.55],
+ key:'匍匐茎发达、节节生根；叶片线形较短；总状花序常两枚对生呈"V"形，是最典型特征。',
+ dif:'与狗牙根：双穗雀稗花序两枚对生、穗轴较宽；狗牙根指状 3~6 枚。与水稻：匍匐贴地、无叶耳。',
+ mg:'匍匐茎繁殖、难拔净；水旱轮作，稻田用五氟磺草胺。'},
+{n:'异型莎草',a:'球穗莎草',f:'莎草科',c:'莎',h:['水田'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'直立丛生',g:['三棱茎','球形小穗','无叶舌'],
+ tr:[.80,.45,.22,.45,.76,.55],
+ key:'茎三棱形，叶片线形；花序由多个球形小穗头状聚成，像小绒球。稻田极常见。',
+ dif:'与香附子：异型莎草一年生、无块茎、小穗球状；香附子有块茎、伞形花序分枝长。',
+ mg:'水稻田用吡嘧磺隆、双草醚；施药前保浅水层 3~5 天。'},
+{n:'香附子',a:'莎草、回头青',f:'莎草科',c:'莎',h:['旱地','园地','路边'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'直立丛生',g:['块茎','三棱茎','伞形花序'],
+ tr:[.82,.40,.30,.50,.70,.50],
+ key:'叶片线形坚硬、深绿，茎三棱形；地下有坚硬块茎（香附子），伞形花序分枝较长、小穗红褐色。',
+ dif:'与异型莎草：香附子有块茎、株型硬挺、伞形花序；异型莎草柔软、小穗球状。',
+ mg:'地下块茎是防除关键，需多次用药或深翻晒土；旱地可用氯吡嘧磺隆。'},
+{n:'鸭舌草',a:'雨久花',f:'雨久花科',c:'阔',h:['水田','湿地'],s:'卵形',e:'全缘',v:'网状',fl:'蓝紫',st:'直立丛生',g:['水生','叶基鞘抱茎'],
+ tr:[.35,.62,.15,.30,.72,.50],
+ key:'水生草本，叶片卵形至心形，基部鞘状抱茎，叶色蓝绿有光泽；花蓝色。稻田及沟渠常见。',
+ dif:'与矮慈姑：鸭舌草叶卵形宽、有长叶柄；矮慈姑叶线状披针形出水挺立。',
+ mg:'水稻田用吡嘧磺隆、苄嘧磺隆；整地清残株、保水层抑制出苗。'},
+{n:'矮慈姑',a:'瓜皮草',f:'泽泻科',c:'阔',h:['水田'],s:'线形',e:'全缘',v:'平行',fl:'白',st:'直立丛生',g:['水生','匍匐枝','平行脉'],
+ tr:[.70,.48,.12,.25,.65,.60],
+ key:'叶线状披针形、出水挺立，基部有鞘；具匍匐枝和球茎，稻田成片生长。',
+ dif:'与鸭舌草：矮慈姑叶片窄长如韭；鸭舌草叶卵形宽。注意慈姑是阔叶类但叶脉平行。',
+ mg:'球茎越冬，苗期用吡嘧磺隆，结合轮作。'},
+{n:'节节菜',a:'水苋菜',f:'千屈菜科',c:'阔',h:['水田','湿地'],s:'卵形',e:'全缘',v:'网状',fl:'红',st:'匍匐',g:['对生叶','湿地'],
+ tr:[.40,.55,.18,.35,.70,.52],
+ key:'茎细弱带红色，叶对生、倒卵形至椭圆形，全缘；花小、腋生带红。水田和田埂湿润处成片。',
+ dif:'与空心莲子草：节节菜叶小、茎细；空心莲子草叶较大、茎中空、节部膨大生根。',
+ mg:'水稻田用苄嘧磺隆；旱育秧注意苗期封闭。'},
+{n:'水竹叶',a:'疣草',f:'鸭跖草科',c:'阔',h:['水田','湿地'],s:'披针形',e:'全缘',v:'平行',fl:'蓝紫',st:'匍匐',g:['节生根','平行脉'],
+ tr:[.68,.50,.20,.35,.75,.55],
+ key:'叶披针形至线状披针形，平行脉明显，叶鞘抱茎；茎匍匐、节部生根。稻田常见。',
+ dif:'与鸭跖草：水竹叶叶更窄长、贴地匍匐、花小；鸭跖草叶卵状披针形、蓝花明显。',
+ mg:'匍匐茎繁殖，稻田用苄嘧磺隆、2 甲 4 氯。'},
+{n:'空心莲子草',a:'水花生、革命草',f:'苋科',c:'阔',h:['水田','湿地','路边'],s:'卵形',e:'全缘',v:'网状',fl:'白',st:'匍匐',g:['茎中空','节生根','对生叶'],
+ tr:[.35,.65,.12,.28,.74,.58],
+ key:'叶对生、椭圆形，全缘有光泽；茎中空、节部膨大并生根，水陆两生，极易成灾。',
+ dif:'与节节菜：空心莲子草叶明显更大、茎中空粗壮；节节菜细小纤弱。',
+ mg:'禁止随意丢弃残茎；水面可用氯氟吡氧乙酸（非耕地）或人工捞除。'},
+{n:'李氏禾',a:'游草',f:'禾本科',c:'禾',h:['水田','湿地'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'匍匐',g:['叶面粗糙','匍匐茎','有叶舌'],
+ tr:[.78,.50,.28,.50,.78,.55],
+ key:'叶片线形、两面粗糙，叶舌短；具匍匐茎，在水田边和湿润处形成厚层。',
+ dif:'与双穗雀稗：李氏禾叶面明显粗糙、圆锥花序；双穗雀稗花序两枚对生。',
+ mg:'匍匐茎繁殖，稻田可用氰氟草酯，田埂用草甘膦。'},
+{n:'马唐',a:'抓地草',f:'禾本科',c:'禾',h:['旱地','园地','路边'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'匍匐',g:['有叶舌','叶鞘有疣毛','指状花序'],
+ tr:[.82,.48,.25,.50,.78,.55],
+ key:'叶片线形，叶鞘常带紫红色并被疣毛；总状花序 3~8 枚指状排列于茎顶，小穗成对。',
+ dif:'与牛筋草：马唐茎较软、节部易生根、叶鞘有毛；牛筋草茎扁压坚韧、根系深。',
+ mg:'旱地苗前乙草胺封闭；出苗后精喹禾灵、高效氟吡甲禾灵。'},
+{n:'牛筋草',a:'蟋蟀草',f:'禾本科',c:'禾',h:['旱地','园地','路边'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'直立丛生',g:['有叶舌','茎扁压','指状花序'],
+ tr:[.80,.42,.22,.45,.68,.45],
+ key:'茎基部扁压、坚韧难拔；叶片线形、深绿；花序 3~6 枚指状排列，穗轴较粗。',
+ dif:'与马唐：牛筋草茎扁、根系发达、极难拔起；马唐茎圆软、节部生根。',
+ mg:'较难防，苗前封闭为主；茎叶期精喹禾灵加助剂并适当提浓度。'},
+{n:'狗尾草',a:'谷莠子',f:'禾本科',c:'禾',h:['旱地','园地','路边'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'直立丛生',g:['有叶舌','圆柱花序','刚毛'],
+ tr:[.78,.50,.25,.55,.76,.55],
+ key:'叶片线形、柔软；圆锥花序紧缩呈圆柱状，小穗基部有长刚毛，形似狗尾。',
+ dif:'与稗草：狗尾草花序圆柱紧缩、刚毛明显；稗草花序分枝开展、无叶舌。',
+ mg:'苗前乙草胺封闭；茎叶期精喹禾灵或烯草酮。'},
+{n:'狗牙根',a:'铁线草、绊根草',f:'禾本科',c:'禾',h:['园地','路边','旱地'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'匍匐',g:['匍匐茎','有叶舌','指状花序'],
+ tr:[.75,.55,.22,.40,.72,.50],
+ key:'匍匐茎贴地延伸、节节生根，叶片短而窄；花序 3~6 枚指状排列，穗轴细。',
+ dif:'与双穗雀稗：狗牙根花序指状多枚、叶短；双穗雀稗两枚对生成 V。',
+ mg:'多年生匍匐茎难清；果园行间用草铵膦定向喷雾。'},
+{n:'白茅',a:'茅草、丝茅',f:'禾本科',c:'禾',h:['园地','路边','旱地'],s:'线形',e:'全缘',v:'平行',fl:'白',st:'直立丛生',g:['根状茎','白色花穗','中脉粗白'],
+ tr:[.85,.38,.20,.40,.70,.60],
+ key:'叶片线形、硬而直立，边缘粗糙；具粗壮根状茎；圆锥花序紧缩呈白色穗状。',
+ dif:'与五节芒：白茅矮、根状茎横走、花序白色紧凑；五节芒高大、叶中脉粗白。',
+ mg:'连根挖除或多次喷草甘膦（非耕地），重点是根茎。'},
+{n:'早熟禾',a:'小青草',f:'禾本科',c:'禾',h:['园地','路边','旱地'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'直立丛生',g:['有叶舌','圆锥花序','低矮'],
+ tr:[.78,.45,.18,.35,.76,.60],
+ key:'一年生低矮草本，叶片细软浅绿，叶舌膜质；圆锥花序开展，小穗小。多生湿润田埂、菜地。',
+ dif:'与看麦娘：早熟禾花序分枝开展、小穗松散；看麦娘花序圆柱紧缩。',
+ mg:'苗前封闭即可；成株后精喹禾灵有效。'},
+{n:'看麦娘',a:'麦娘娘',f:'禾本科',c:'禾',h:['水田','湿地','旱地'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'直立丛生',g:['有叶舌','圆柱花序','无叶耳'],
+ tr:[.80,.45,.18,.35,.78,.60],
+ key:'叶片柔软浅绿，叶鞘常膨大；圆锥花序圆柱状紧缩、小穗密集。冬春季稻茬田、麦田成片。',
+ dif:'与早熟禾：看麦娘花序紧密圆柱状；早熟禾分枝松散。与小麦：看麦娘无叶耳。',
+ mg:'稻茬田冬前或早春用异丙隆；水稻田注意苗期封闭。'},
+{n:'五节芒',a:'芭茅',f:'禾本科',c:'禾',h:['园地','路边'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'直立丛生',g:['高大株型','中脉粗白','叶缘粗糙'],
+ tr:[.88,.40,.28,.50,.66,.50],
+ key:'植株高大，叶片宽线形、中脉粗白明显，边缘粗糙；圆锥花序大型。果园边、荒坡常见。',
+ dif:'与白茅：五节芒高大粗壮、叶片宽；白茅低矮、花序白色穗状。',
+ mg:'人工割除结合草甘膦（非耕地），重点是根茎。'},
+{n:'马齿苋',a:'长命菜、瓜子菜',f:'马齿苋科',c:'阔',h:['旱地','园地','路边'],s:'圆形',e:'全缘',v:'网状',fl:'黄',st:'匍匐',g:['肉质叶','紫红茎'],
+ tr:[.25,.70,.10,.20,.72,.62],
+ key:'全株肉质光滑，叶倒卵形、全缘；茎紫红、铺地生长。菜地、果园极常见。',
+ dif:'与空心莲子草：马齿苋叶肉质厚、茎紫红；空心莲子草叶薄、茎中空有节根。',
+ mg:'肉质茎再生力强，拔除需晒干；苗前乙草胺。'},
+{n:'藜',a:'灰菜、灰灰菜',f:'藜科',c:'阔',h:['旱地','园地','路边'],s:'卵形',e:'波状',v:'网状',fl:'无',st:'直立丛生',g:['幼叶白粉','波状齿'],
+ tr:[.40,.62,.45,.45,.62,.65],
+ key:'叶片菱状卵形，边缘波状齿，幼叶和叶背被白色粉粒，整体灰绿色。',
+ dif:'与反枝苋：藜叶带白粉、边缘波状齿；反枝苋叶全缘、茎有毛。',
+ mg:'苗前封闭为主；茎叶期氯氟吡氧乙酸（非耕地）。'},
+{n:'反枝苋',a:'野苋菜、猪草',f:'苋科',c:'阔',h:['旱地','园地','路边'],s:'卵形',e:'全缘',v:'网状',fl:'无',st:'直立丛生',g:['茎被毛','穗状花序'],
+ tr:[.40,.65,.15,.40,.65,.52],
+ key:'叶片卵形至菱状卵形、全缘，先端微凸；茎密被短毛；穗状花序紧密顶生。',
+ dif:'与藜：反枝苋叶全缘无白粉、茎有毛；藜叶波状齿带白粉。',
+ mg:'出苗快易抗性，苗前乙草胺 + 茎叶期轮换用药。'},
+{n:'小飞蓬',a:'加拿大蓬',f:'菊科',c:'菊',h:['旱地','园地','路边'],s:'披针形',e:'锯齿',v:'网状',fl:'白',st:'直立丛生',g:['茎被毛','小头状花序'],
+ tr:[.65,.50,.30,.45,.68,.50],
+ key:'茎直立、被粗糙毛；叶披针形至线形，全缘或有疏齿；头状花序极小、白色，多而密。',
+ dif:'与一年蓬：小飞蓬叶窄线形、花序极小；一年蓬叶有粗齿、舌状花明显。',
+ mg:'种子量大，务必开花前清除；可用草铵膦（非耕地）。'},
+{n:'加拿大一枝黄花',a:'黄莺',f:'菊科',c:'菊',h:['园地','路边'],s:'披针形',e:'锯齿',v:'网状',fl:'黄',st:'直立丛生',g:['入侵种','黄色花序','根状茎'],
+ tr:[.62,.55,.40,.45,.66,.52],
+ key:'植株高大，叶披针形、叶缘有锯齿、具三出脉；头状花序黄色、密集圆锥状。根状茎发达。',
+ dif:'与五节芒：一枝黄花头状花序黄色明显、叶有锯齿；五节芒为禾本科、花序穗状。',
+ mg:'入侵恶性杂草，开花前连根挖除销毁，防机械传播根茎。'},
+{n:'鬼针草',a:'婆婆针、咸丰草',f:'菊科',c:'菊',h:['旱地','园地','路边'],s:'羽状裂',e:'锯齿',v:'网状',fl:'黄',st:'直立丛生',g:['复叶','瘦果带芒刺'],
+ tr:[.50,.60,.45,.50,.70,.52],
+ key:'叶对生、羽状复叶（常 3~5 小叶），边缘有锯齿；瘦果线形、顶端有 3~4 枚倒刺芒。',
+ dif:'与胜红蓟：鬼针草复叶、果实带刺；胜红蓟单叶卵形、花序蓝紫。',
+ mg:'花期前割除，防刺果黏附传播；草铵膦定向喷雾。'},
+{n:'胜红蓟',a:'藿香蓟、臭草',f:'菊科',c:'菊',h:['旱地','园地','路边'],s:'卵形',e:'圆齿',v:'网状',fl:'蓝紫',st:'直立丛生',g:['全株被毛','蓝紫花序'],
+ tr:[.35,.62,.35,.45,.70,.55],
+ key:'全株被白色柔毛，叶卵形、叶缘圆齿；头状花序小、蓝紫色密集成伞房状。揉碎有气味。',
+ dif:'与鬼针草：胜红蓟单叶、花序蓝紫；鬼针草复叶、果实带刺。',
+ mg:'种子多、再生力强，苗前封闭 + 花期前刈割。'},
+{n:'龙葵',a:'野茄子、黑天天',f:'茄科',c:'阔',h:['旱地','园地','路边'],s:'卵形',e:'波状',v:'网状',fl:'白',st:'直立丛生',g:['浆果黑色','伞形花序'],
+ tr:[.35,.62,.18,.35,.68,.48],
+ key:'叶卵形、全缘或波状齿；花白色伞形花序；浆果球形、成熟后黑色。',
+ dif:'与铁苋菜：龙葵有黑色浆果、叶较大；铁苋菜雌花有叶状苞片、无浆果。',
+ mg:'注意茄科轮作间隔；苗前乙草胺，茎叶期灭草松。'},
+{n:'苘麻',a:'磨盘草、青麻',f:'锦葵科',c:'阔',h:['旱地','园地'],s:'心形',e:'锯齿',v:'网状',fl:'黄',st:'直立丛生',g:['心形大叶','被绒毛'],
+ tr:[.30,.68,.30,.55,.66,.58],
+ key:'叶心形、大而柔软，边缘有齿，全株被星状绒毛；花黄色，果实半球形如磨盘。',
+ dif:'与打碗花：苘麻直立、心形大叶被绒毛；打碗花缠绕、叶戟形。',
+ mg:'植株较大，人工拔除为主；苗前乙氧氟草醚封闭。'},
+{n:'铁苋菜',a:'海蚌含珠',f:'大戟科',c:'阔',h:['旱地','园地','路边'],s:'卵形',e:'锯齿',v:'网状',fl:'无',st:'直立丛生',g:['叶状苞片'],
+ tr:[.38,.60,.35,.45,.66,.52],
+ key:'叶卵形至菱状卵形，边缘有齿；雌花生于叶状苞片内，形似蚌含珠，最好认的特征。',
+ dif:'与飞扬草：铁苋菜有三角状叶状苞片；飞扬草杯状花序、叶基偏斜。',
+ mg:'苗前封闭为主；茎叶期灭草松或 2 甲 4 氯（禾本科田）。'},
+{n:'飞扬草',a:'大飞扬、乳汁草',f:'大戟科',c:'阔',h:['旱地','园地','路边'],s:'卵形',e:'锯齿',v:'网状',fl:'无',st:'匍匐',g:['白色乳汁','杯状花序'],
+ tr:[.35,.58,.30,.45,.62,.50],
+ key:'全株被毛、含白色乳汁；叶对生、卵形且基部偏斜，边缘有细齿；杯状花序密集成头状。',
+ dif:'与铁苋菜：飞扬草叶基偏斜、有乳汁；铁苋菜叶基对称、有叶状苞片。',
+ mg:'苗前封闭；茎叶期草铵膦（非耕地）或 2 甲 4 氯。'},
+{n:'酢浆草',a:'酸味草、三叶酸',f:'酢浆草科',c:'阔',h:['园地','路边','旱地'],s:'三出复叶',e:'全缘',v:'网状',fl:'黄',st:'匍匐',g:['复叶','心形小叶'],
+ tr:[.30,.55,.20,.30,.60,.48],
+ key:'三出复叶、小叶心形，全缘；茎细匍匐，花黄色。果园、草坪、路边成片。',
+ dif:'与积雪草：酢浆草三出复叶；积雪草单叶肾形有圆齿。',
+ mg:'匍匐茎 + 种球难除；草坪用专用阔叶除草剂。'},
+{n:'车前',a:'车前草、猪耳草',f:'车前科',c:'阔',h:['路边','园地','旱地'],s:'卵形',e:'全缘',v:'平行',fl:'无',st:'直立丛生',g:['基生莲座','平行脉'],
+ tr:[.35,.68,.10,.25,.62,.55],
+ key:'叶基生成莲座状，叶片卵形至椭圆形，全缘或微波状，纵向平行脉 5~7 条极明显。',
+ dif:'与蒲公英：车前叶全缘、脉平行；蒲公英羽状深裂、有乳汁。',
+ mg:'人工拔除为主，花序抽出前清除。'},
+{n:'蒲公英',a:'婆婆丁',f:'菊科',c:'菊',h:['园地','路边','旱地'],s:'羽状裂',e:'深裂',v:'网状',fl:'黄',st:'直立丛生',g:['白色乳汁','基生莲座'],
+ tr:[.55,.58,.50,.40,.60,.55],
+ key:'叶基生莲座状、倒披针形、羽状深裂，裂片常向基部倒向；含白色乳汁；花黄色头状。',
+ dif:'与苦苣菜：蒲公英无茎、裂片倒向、花单生；苦苣菜有直立茎、裂片三角形。',
+ mg:'根深、断根可再发，需连主根挖除。'},
+{n:'苦苣菜',a:'苣荬菜、野苦菜',f:'菊科',c:'菊',h:['旱地','园地','路边'],s:'羽状裂',e:'深裂',v:'网状',fl:'黄',st:'直立丛生',g:['白色乳汁','叶缘刺齿'],
+ tr:[.55,.55,.55,.45,.62,.55],
+ key:'茎直立、中空，含白色乳汁；叶羽状深裂、边缘具不规则刺齿；头状花序黄色。',
+ dif:'与蒲公英：苦苣菜有直立茎、裂片三角形；蒲公英无茎、裂片倒向。',
+ mg:'根茎繁殖，连根挖除或苗前封闭。'},
+{n:'荠',a:'荠菜、地菜',f:'十字花科',c:'阔',h:['旱地','园地','路边'],s:'羽状裂',e:'深裂',v:'网状',fl:'白',st:'直立丛生',g:['基生莲座','角果'],
+ tr:[.45,.55,.45,.40,.62,.58],
+ key:'基生叶莲座状、羽状分裂；茎生叶基部箭形抱茎；角果倒三角形（心形），是识别关键。',
+ dif:'与播娘蒿：荠角果倒三角、叶较宽；播娘蒿叶多次细裂、角果细长。',
+ mg:'冬春出苗，苗前封闭或人工拔除；开花前清除。'},
+{n:'繁缕',a:'鹅肠菜、抽筋草',f:'石竹科',c:'阔',h:['旱地','园地','路边'],s:'卵形',e:'全缘',v:'网状',fl:'白',st:'匍匐',g:['对生叶','茎一侧有毛'],
+ tr:[.35,.55,.12,.30,.68,.62],
+ key:'茎细软、匍匐或上升，茎一侧有一行柔毛；叶对生、卵形全缘，下部有柄、上部无柄。',
+ dif:'与婆婆纳：繁缕茎细软有单行毛、叶全缘；婆婆纳叶缘有圆齿、果心形。',
+ mg:'浅根易拔；苗前封闭，结籽前清除。'},
+{n:'婆婆纳',a:'双肾草',f:'玄参科',c:'阔',h:['旱地','园地','路边'],s:'卵形',e:'圆齿',v:'网状',fl:'蓝紫',st:'匍匐',g:['对生叶','心形蒴果'],
+ tr:[.35,.58,.25,.35,.64,.55],
+ key:'茎匍匐、被柔毛；叶对生、卵形，边缘有 3~5 对圆齿；蒴果心形、顶端凹。',
+ dif:'与繁缕：婆婆纳叶有圆齿、蒴果心形；繁缕叶全缘、茎单行毛。',
+ mg:'苗前封闭为主；成株后 2 甲 4 氯（禾本科田）或人工拔除。'},
+{n:'猪殃殃',a:'拉拉藤、锯锯藤',f:'茜草科',c:'阔',h:['旱地','园地','路边'],s:'披针形',e:'全缘',v:'网状',fl:'白',st:'匍匐',g:['轮生叶','茎有倒刺'],
+ tr:[.55,.50,.20,.35,.66,.58],
+ key:'叶 6~8 片轮生、线状倒披针形；茎四棱、棱上有倒刺，手摸明显有阻力。',
+ dif:'与繁缕：猪殃殃叶轮生、茎有倒刺；繁缕叶对生、仅一侧有毛。',
+ mg:'缠绕作物，尽早拔除；麦田可用苯磺隆类，注意抗性。'},
+{n:'打碗花',a:'田旋花、小旋花',f:'旋花科',c:'阔',h:['旱地','园地','路边'],s:'戟形',e:'全缘',v:'网状',fl:'白',st:'匍匐',g:['缠绕茎','戟形叶'],
+ tr:[.35,.50,.15,.30,.62,.55],
+ key:'茎缠绕或匍匐，叶戟形至箭形，基部两侧有耳状裂片；花漏斗状、粉白色。',
+ dif:'与苘麻：打碗花缠绕、叶戟形；苘麻直立、心形大叶被毛。与甘薯：打碗花叶小薄、缠绕细弱。',
+ mg:'地下根状茎发达，中耕 + 定向喷氯氟吡氧乙酸（非耕地）。'},
+{n:'艾',a:'艾蒿',f:'菊科',c:'菊',h:['园地','路边','旱地'],s:'羽状裂',e:'深裂',v:'网状',fl:'黄',st:'直立丛生',g:['叶背白绒','香气'],
+ tr:[.55,.55,.50,.60,.55,.65],
+ key:'叶羽状深裂，叶面绿色、叶背密被白色绒毛；全株有浓烈香气；头状花序小、排成穗状。',
+ dif:'与益母草：艾叶背白色绒毛、香气浓；益母草叶裂较浅、无白绒。',
+ mg:'根茎繁殖，连根挖除；果园定向喷草铵膦。'},
+{n:'一年蓬',a:'千层塔、野菊',f:'菊科',c:'菊',h:['园地','路边','旱地'],s:'披针形',e:'锯齿',v:'网状',fl:'白',st:'直立丛生',g:['舌状花白','茎被毛'],
+ tr:[.60,.55,.35,.45,.66,.55],
+ key:'茎直立、被短毛；叶披针形、边缘有粗齿；头状花序伞房状，舌状花白色细而明显。',
+ dif:'与小飞蓬：一年蓬花序较大、舌状花明显；小飞蓬花序极小、叶更窄。',
+ mg:'开花前刈割或拔除，防种子扩散。'},
+{n:'通泉草',a:'小地炮',f:'玄参科',c:'阔',h:['湿地','路边','水田'],s:'卵形',e:'锯齿',v:'网状',fl:'蓝紫',st:'匍匐',g:['喜湿','小花紫色'],
+ tr:[.40,.55,.30,.35,.62,.52],
+ key:'植株矮小、茎匍匐；叶倒卵形，边缘有粗齿，基部渐狭成柄；花小、蓝紫色。田埂湿润处常见。',
+ dif:'与婆婆纳：通泉草叶基渐狭成柄、花冠二裂；婆婆纳叶基圆形、蒴果心形。',
+ mg:'田埂常见，清沟降湿 + 苗前封闭可明显减轻。'},
+{n:'积雪草',a:'雷公根、铜钱草',f:'伞形科',c:'阔',h:['园地','路边','湿地'],s:'圆形',e:'圆齿',v:'网状',fl:'白',st:'匍匐',g:['肾形叶','匍匐茎'],
+ tr:[.30,.60,.25,.30,.62,.52],
+ key:'茎细长匍匐、节部生根；叶单生、肾形至圆形，叶缘有圆齿，基部深心形，形似铜钱。',
+ dif:'与酢浆草：积雪草单叶肾形；酢浆草三出复叶。',
+ mg:'匍匐茎蔓延快，人工清除 + 覆盖地膜抑草。'},
+
+/* ===== 作物对照库 ===== */
+{n:'水稻',a:'稻、禾',f:'禾本科',c:'作',h:['水田'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'直立丛生',g:['有叶舌','有叶耳','成片整齐','中脉较淡'],
+ tr:[.80,.55,.20,.42,.80,.58],
+ key:'有膜质叶舌 + 明显叶耳（叶鞘口两侧爪状抱茎），叶片线形、中脉不粗白，株型整齐、成行成片。',
+ dif:'与稗草：稗草无叶舌无叶耳、叶鞘较扁、茎基常红褐、分蘖松散、穗枝下垂。与千金子：千金子有叶舌但无叶耳、株型细弱。',
+ mg:'手指沿叶鞘往上推，摸到膜状叶舌、两侧有爪状叶耳 → 水稻；完全光滑 → 稗草。'},
+{n:'玉米',a:'苞米、玉蜀黍',f:'禾本科',c:'作',h:['旱地','园地'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'直立丛生',g:['有叶舌','中脉粗白','成片整齐'],
+ tr:[.72,.60,.22,.45,.72,.60],
+ key:'叶片宽大、中脉粗白明显，叶舌膜质较厚；株型高大整齐，茎秆粗壮有节。',
+ dif:'与五节芒：玉米叶更宽、有叶舌、茎粗有节且成片种植；五节芒叶缘粗糙、野生散生。',
+ mg:'看是否有明显叶舌 + 粗壮茎节 + 成行种植，杂草无此组合。'},
+{n:'小麦',a:'麦',f:'禾本科',c:'作',h:['旱地'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'直立丛生',g:['有叶舌','有叶耳','成片整齐'],
+ tr:[.82,.50,.20,.40,.76,.60],
+ key:'叶舌短、叶耳小而明显，叶片细长浅绿，株型整齐成行。',
+ dif:'与看麦娘：小麦有叶耳、抽穗为麦穗；看麦娘无叶耳、花序圆柱状紧缩且株型细弱。',
+ mg:'找叶耳（爪状抱茎小片）+ 成行整齐；看麦娘无叶耳、常成丛散生。'},
+{n:'大豆',a:'黄豆',f:'豆科',c:'作',h:['旱地'],s:'三出复叶',e:'全缘',v:'网状',fl:'白',st:'直立丛生',g:['复叶','被绒毛','成片整齐'],
+ tr:[.40,.62,.20,.42,.70,.52],
+ key:'三出复叶、小叶卵形被短毛，茎直立有毛，豆荚明显。',
+ dif:'与野大豆：栽培大豆株型整齐、荚果密集；野大豆细弱缠绕、荚小。',
+ mg:'三出复叶 + 豆荚 + 成行整齐。'},
+{n:'花生',a:'落花生',f:'豆科',c:'作',h:['旱地'],s:'羽状裂',e:'全缘',v:'网状',fl:'黄',st:'匍匐',g:['复叶','黄花','成片整齐'],
+ tr:[.38,.60,.25,.40,.66,.50],
+ key:'偶数羽状复叶（常 4 小叶）、小叶倒卵形全缘，花黄色生于叶腋，植株低矮整齐。',
+ dif:'与酢浆草：花生为 4 小叶羽状复叶、成片种植；酢浆草三出复叶、匍匐细弱散生。',
+ mg:'数小叶（4 枚）+ 看是否成片栽植。'},
+{n:'甘蔗',a:'糖蔗',f:'禾本科',c:'作',h:['旱地'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'直立丛生',g:['茎粗','中脉粗白','成片整齐'],
+ tr:[.82,.45,.24,.50,.70,.58],
+ key:'茎粗壮有节、表面被白粉，叶片宽长、中脉粗白，叶鞘紧抱茎且易脱落。',
+ dif:'与五节芒、白茅：甘蔗茎粗有节、成行种植、叶鞘抱茎明显；野生禾草茎细、散生。',
+ mg:'茎粗有节 + 成行 + 叶鞘抱茎。'},
+{n:'甘薯',a:'红薯、地瓜',f:'旋花科',c:'作',h:['旱地','园地'],s:'心形',e:'全缘',v:'网状',fl:'白',st:'匍匐',g:['心形叶','匍匐茎','成片整齐'],
+ tr:[.30,.65,.15,.30,.66,.55],
+ key:'叶心形至戟形，全缘或有浅裂，茎匍匐蔓生、节部易生根，成片覆盖地面。',
+ dif:'与打碗花、田旋花：甘薯叶大而厚、蔓粗、人工栽植成片；打碗花叶小而薄、缠绕细弱。',
+ mg:'叶大厚 + 蔓粗有节 + 成片栽植。'},
+{n:'白菜',a:'菜心、小白菜',f:'十字花科',c:'作',h:['园地','旱地'],s:'卵形',e:'全缘',v:'网状',fl:'黄',st:'直立丛生',g:['叶柄宽','莲座','成片整齐'],
+ tr:[.30,.68,.20,.28,.62,.60],
+ key:'叶卵形至倒卵形，叶柄宽而明显、白绿色，全缘或波状，株型莲座状整齐。',
+ dif:'与荠、播娘蒿：白菜叶柄宽厚、叶面光滑、成畦种植；荠叶羽状分裂、散生。',
+ mg:'宽厚叶柄 + 成畦整齐排列。'},
+{n:'番茄',a:'西红柿',f:'茄科',c:'作',h:['园地','旱地'],s:'羽状裂',e:'锯齿',v:'网状',fl:'黄',st:'直立丛生',g:['复叶','被绒毛','香气'],
+ tr:[.45,.55,.45,.50,.62,.50],
+ key:'羽状复叶、小叶不规则，全株被短毛并有特殊气味，茎直立或绑蔓。',
+ dif:'与龙葵：番茄复叶、有气味、果实大；龙葵单叶、浆果小而黑。',
+ mg:'复叶 + 特殊气味 + 人工支架绑蔓。'},
+{n:'香蕉',a:'蕉',f:'芭蕉科',c:'作',h:['园地'],s:'线形',e:'全缘',v:'平行',fl:'无',st:'直立丛生',g:['中脉粗白','大型叶','成片整齐'],
+ tr:[.70,.62,.15,.35,.66,.55],
+ key:'假茎粗壮、由叶鞘层层包裹，叶片大型长椭圆形、中脉粗白、侧脉平行。',
+ dif:'与五节芒：香蕉假茎粗、叶中脉极粗、成片栽植；五节芒茎细、叶窄。',
+ mg:'粗壮假茎 + 大叶 + 成片栽植。'}
+];
+
+var SHAPES=['线形','披针形','卵形','心形','圆形','羽状裂','三出复叶','戟形'];
+var EDGES=['全缘','锯齿','波状','深裂','圆齿'];
+var VEINS=['平行','网状'];
+var FLS=['未见','黄','白','蓝紫','红'];
+var HABS=['水田','旱地','园地','路边','湿地'];
+var STEMS=['直立丛生','匍匐'];
+var TAGS=['无叶舌','有叶舌','有叶耳','三棱茎','肉质叶','白色乳汁','紫红茎','块茎','复叶','被绒毛','水生','香气','匍匐茎','成片整齐'];
+
+var ST={img:null,shape:'',edge:'',vein:'',fl:'',hab:[],stem:'',tag:[]};
+
+function el(id){return document.getElementById(id)}
+
+function mkSel(box,arr,key){
+  box.innerHTML='';
+  arr.forEach(function(v){
+    var d=document.createElement('div');
+    d.className='chip';d.textContent=v;d.dataset.v=v;
+    d.onclick=function(){
+      var on=d.classList.contains('on');
+      Array.prototype.forEach.call(box.children,function(c){c.classList.remove('on')});
+      if(on){ST[key]=''}else{d.classList.add('on');ST[key]=v}
+    };
+    box.appendChild(d);
+  });
+}
+mkSel(el('c-shape'),SHAPES,'shape');
+mkSel(el('c-edge'),EDGES,'edge');
+mkSel(el('c-vein'),VEINS,'vein');
+mkSel(el('c-fl'),FLS,'fl');
+mkSel(el('c-stem'),STEMS,'stem');
+
+(function(){
+  var box=el('c-hab');box.innerHTML='';
+  HABS.forEach(function(v){
+    var d=document.createElement('div');
+    d.className='chip';d.textContent=v;d.dataset.v=v;
+    d.onclick=function(){
+      var i=ST.hab.indexOf(v);
+      if(i>=0){ST.hab.splice(i,1);d.classList.remove('on')}
+      else{ST.hab.push(v);d.classList.add('on')}
+    };
+    box.appendChild(d);
+  });
+})();
+
+(function(){
+  var box=el('c-tag');box.innerHTML='';
+  TAGS.forEach(function(v){
+    var d=document.createElement('div');
+    d.className='chip';d.textContent=v;d.dataset.v=v;
+    d.onclick=function(){
+      var i=ST.tag.indexOf(v);
+      if(i>=0){ST.tag.splice(i,1);d.classList.remove('on')}
+      else if(ST.tag.length>=3){return}
+      else{ST.tag.push(v);d.classList.add('on')}
+    };
+    box.appendChild(d);
+  });
+})();
+
+el('drop').onclick=function(){el('file').click()};
+el('again').onclick=function(e){e.stopPropagation();el('file').click()};
+el('file').onchange=function(e){
+  var f=e.target.files&&e.target.files[0];
+  if(!f)return;
+  var fr=new FileReader();
+  fr.onload=function(){
+    var img=new Image();
+    img.onload=function(){
+      el('prev').src=fr.result;
+      el('prev').style.display='block';
+      el('prevBox').style.display='block';
+      el('drop').style.display='none';
+      setTimeout(function(){ST.img=analyze(img);renderFeat();autofill();},30);
+    };
+    img.onerror=function(){alert('这张图片打不开，换 JPG/PNG 试试')};
+    img.src=fr.result;
+  };
+  fr.readAsDataURL(f);
+  e.target.value='';
+};
+
+function rgb2hsv(r,g,b){
+  r/=255;g/=255;b/=255;
+  var mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,h=0;
+  if(d>0){
+    if(mx===r)h=60*(((g-b)/d)%6);
+    else if(mx===g)h=60*((b-r)/d+2);
+    else h=60*((r-g)/d+4);
+  }
+  if(h<0)h+=360;
+  return [h,mx===0?0:d/mx,mx];
+}
+function clamp(v){return Math.max(0,Math.min(1,v))}
+
+function analyze(img){
+  var MAX=280;
+  var w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
+  var sc=Math.max(w,h)>MAX?MAX/Math.max(w,h):1;
+  var W=Math.max(2,Math.round(w*sc)),H=Math.max(2,Math.round(h*sc));
+  var cv=document.createElement('canvas');cv.width=W;cv.height=H;
+  var ctx=cv.getContext('2d',{willReadFrequently:true});
+  ctx.drawImage(img,0,0,W,H);
+  var dat=ctx.getImageData(0,0,W,H).data;
+
+  var br=[],bg=[],bb=[];
+  function push(x,y){var i=(y*W+x)*4;br.push(dat[i]);bg.push(dat[i+1]);bb.push(dat[i+2])}
+  for(var x=0;x<W;x+=2){push(x,0);push(x,H-1)}
+  for(var y=0;y<H;y+=2){push(0,y);push(W-1,y)}
+  function med(a){a.sort(function(p,q){return p-q});return a[Math.floor(a.length/2)]}
+  var R=med(br),G=med(bg),B=med(bb);
+
+  var mask=new Uint8Array(W*H);
+  var n=0,minx=W,maxx=0,miny=H,maxy=0;
+  var sumR=0,sumG=0,sumB=0,greenN=0,purpleN=0,fY=0,fB=0,fW=0,fR=0;
+  for(var j=0;j<H;j++)for(var k=0;k<W;k++){
+    var idx=(j*W+k)*4;
+    var r=dat[idx],g=dat[idx+1],b=dat[idx+2];
+    var dist=Math.abs(r-R)+Math.abs(g-G)+Math.abs(b-B);
+    var isGreen=(g>r+12)&&(g>b+6);
+    if(!(dist>78||(isGreen&&dist>34)))continue;
+    mask[j*W+k]=1;n++;
+    if(k<minx)minx=k;if(k>maxx)maxx=k;
+    if(j<miny)miny=j;if(j>maxy)maxy=j;
+    sumR+=r;sumG+=g;sumB+=b;
+    var hsv=rgb2hsv(r,g,b),hh=hsv[0],ss=hsv[1],vv=hsv[2];
+    if(hh>=65&&hh<=175&&ss>0.18)greenN++;
+    if((hh<22||hh>325)&&ss>0.28&&vv<0.72)purpleN++;
+    if(ss>0.30&&vv>0.25){
+      if(hh>=40&&hh<=78)fY++;
+      else if(hh>=235&&hh<=315)fB++;
+      else if(ss>0.35&&(hh>=318||hh<=14))fR++;
+    }
+    if(ss<0.16&&vv>0.74)fW++;
+  }
+  if(n<20)return {empty:true,W:W,H:H,raw:{}};
+
+  var mxx=(minx+maxx)/2,myy=(miny+maxy)/2;
+  var sxx=0,syy=0,sxy=0,cnt=0;
+  for(var j2=miny;j2<=maxy;j2++)for(var k2=minx;k2<=maxx;k2++){
+    if(!mask[j2*W+k2])continue;
+    var dx=k2-mxx,dy=j2-myy;
+    sxx+=dx*dx;syy+=dy*dy;sxy+=dx*dy;cnt++;
+  }
+  sxx/=cnt;syy/=cnt;sxy/=cnt;
+  var trc=sxx+syy,det=sxx*syy-sxy*sxy;
+  var disc=Math.max(0,trc*trc/4-det),root=Math.sqrt(disc);
+  var l1=trc/2+root,l2=Math.max(trc/2-root,0.6);
+  var elong=Math.sqrt(l1/l2);
+
+  var bw=Math.max(1,maxx-minx+1),bh=Math.max(1,maxy-miny+1);
+  var fill=n/(bw*bh);
+
+  var gray=new Float32Array(W*H);
+  for(var p=0;p<W*H;p++){var q=p*4;gray[p]=0.299*dat[q]+0.587*dat[q+1]+0.114*dat[q+2]}
+
+  var eCnt=0,tSum=0,tCnt=0;
+  var hist=new Float64Array(18),hTot=0;
+  for(var y3=1;y3<H-1;y3++)for(var x3=1;x3<W-1;x3++){
+    if(!mask[y3*W+x3])continue;
+    var gx=-gray[(y3-1)*W+x3-1]-2*gray[y3*W+x3-1]-gray[(y3+1)*W+x3-1]
+           +gray[(y3-1)*W+x3+1]+2*gray[y3*W+x3+1]+gray[(y3+1)*W+x3+1];
+    var gy=-gray[(y3-1)*W+x3-1]-2*gray[(y3-1)*W+x3]-gray[(y3-1)*W+x3+1]
+           +gray[(y3+1)*W+x3-1]+2*gray[(y3+1)*W+x3]+gray[(y3+1)*W+x3+1];
+    var mag=Math.sqrt(gx*gx+gy*gy);
+    if(mag>70)eCnt++;
+    var lap=4*gray[y3*W+x3]-gray[(y3-1)*W+x3]-gray[(y3+1)*W+x3]-gray[y3*W+x3-1]-gray[y3*W+x3+1];
+    tSum+=Math.abs(lap);tCnt++;
+    /* 只用"叶内部"像素：剔除叶缘附近的边缘响应，避免轮廓方向主导 */
+    var inner=mask[(y3-1)*W+x3]&&mask[(y3+1)*W+x3]&&mask[y3*W+x3-1]&&mask[y3*W+x3+1]
+           &&mask[(y3-2)*W+x3]&&mask[(y3+2)*W+x3]&&mask[y3*W+x3-2]&&mask[y3*W+x3+2];
+    if(mag>45&&inner){
+      var ang=Math.atan2(gy,gx);
+      if(ang<0)ang+=Math.PI;
+      if(ang>=Math.PI)ang-=Math.PI;
+      hist[Math.min(17,Math.floor(ang/Math.PI*18))]++;hTot++;
+    }
+  }
+  var edgeD=eCnt/Math.max(1,n);
+  var tex=tCnt?tSum/tCnt:0;
+
+  var veinC=0;
+  if(hTot>30){
+    var ent=0;
+    for(var i2=0;i2<18;i2++){
+      var pr=hist[i2]/hTot;
+      if(pr>0)ent-=pr*Math.log(pr);
+    }
+    veinC=clamp((1-ent/Math.log(18))*1.55);
+  }
+
+  var mhsv=rgb2hsv(sumR/n,sumG/n,sumB/n);
+  var flw='无';
+  var shY=fY/n,shB=fB/n,shW=fW/n,shR=fR/n;
+  var mx=Math.max(shY,shB,shR,shW);
+  if(mx>0.035){
+    if(mx===shY)flw='黄';
+    else if(mx===shB)flw='蓝紫';
+    else if(mx===shR)flw='红';
+    else flw='白';
+  }
+  return {
+    empty:false,W:W,H:H,
+    elong:clamp(Math.log(Math.max(1.05,elong))/Math.log(7.5)),
+    fill:clamp((fill-0.16)/0.66),
+    edge:clamp(edgeD/0.32),
+    tex:clamp(tex/42),
+    green:clamp(greenN/Math.max(1,n)*1.7),
+    light:clamp(mhsv[2]),
+    vein:veinC,
+    flower:flw,
+    flShare:mx,
+    raw:{elong:elong,fill:fill,edge:edgeD,tex:tex,green:greenN/n,purple:purpleN/n,vein:veinC,flower:flw}
+  };
+}
+
+function renderFeat(){
+  var f=ST.img;if(!f)return;
+  var box=el('feats');box.innerHTML='';
+  if(f.empty){box.innerHTML='<div class="feat">没分离出植株，换干净背景重拍</div>';return}
+  var r=f.raw;
+  var items=[
+    ['细长指数',r.elong.toFixed(2)],
+    ['叶面占据',(r.fill*100).toFixed(0)+'%'],
+    ['叶缘复杂度',(r.edge*100).toFixed(1)+'%'],
+    ['叶面纹理',r.tex.toFixed(1)],
+    ['花色倾向',(r.flower==='无'?'未检出':r.flower)],
+    ['绿色占比',(r.green*100).toFixed(0)+'%'],
+    ['紫色/花色',(r.purple*100).toFixed(0)+'% / '+r.flower]
+  ];
+  items.forEach(function(it,ix){
+    var d=document.createElement('div');
+    d.className='feat'+(ix===4?' hi':'');d.textContent=it[0]+' '+it[1];
+    box.appendChild(d);
+  });
+}
+
+function autofill(){
+  var f=ST.img;if(!f||f.empty)return;
+  /* 叶脉、花色机器易误判：只在花色占比很高时才自动填，其余留给用户点一下 */
+  if(!ST.fl&&f.flShare>=0.10){
+    var want=(f.flower==='无')?'未见':f.flower;
+    ST.fl=want;
+    Array.prototype.forEach.call(el('c-fl').children,function(c){
+      c.classList.toggle('on',c.dataset.v===want);
+    });
+  }
+}
+
+var W_IMG={elong:1.45,fill:0.95,edge:1.05,tex:0.6,green:0.8,light:0.4};
+
+function scoreOne(sp){
+  var imgS=null;
+  if(ST.img&&!ST.img.empty){
+    var tot=0,wsum=0;
+    var keys=['elong','fill','edge','tex','green','light'];
+    for(var i=0;i<6;i++){
+      var key=keys[i];
+      var tv=sp.tr[i];
+      tot+=W_IMG[key]*(1-Math.abs(ST.img[key]-tv));wsum+=W_IMG[key];
+    }
+    imgS=tot/wsum*100;
+  }
+  var pts=0,max=0;
+  function add(w,ok){max+=w;if(ok)pts+=w}
+  if(ST.shape)add(24,ST.shape===sp.s);
+  if(ST.edge)add(14,ST.edge===sp.e);
+  if(ST.vein)add(22,ST.vein===sp.v);
+  if(ST.fl)add(15,(ST.fl==='未见')?sp.fl==='无':ST.fl===sp.fl);
+  if(ST.hab.length)add(14,sp.h.some(function(h){return ST.hab.indexOf(h)>=0}));
+  if(ST.stem)add(9,ST.stem===sp.st);
+  if(ST.tag.length){
+    var m=0,cap=Math.min(2,ST.tag.length);
+    ST.tag.forEach(function(t){if(sp.g.indexOf(t)>=0)m++});
+    add(24,m/Math.max(1,cap));
+  }
+  var manPart=max?pts/max*100:0;
+  var hasMan=max>0;
+  var total;
+  if(imgS!==null&&hasMan)total=imgS*0.56+manPart*0.44;
+  else if(imgS!==null)total=imgS*0.76+11;
+  else if(hasMan)total=manPart;
+  else total=0;
+  return {total:Math.max(0,Math.min(98,total)),img:imgS,man:manPart};
+}
+function judge(v){
+  if(v>=70)return ['高度吻合','g1'];
+  if(v>=52)return ['较吻合','g2'];
+  return ['可能',''];
+}
+function catName(sp){return sp.c==='作'?'作物':(sp.c==='禾'?'禾本科':(sp.c==='莎'?'莎草科':(sp.c==='菊'?'菊科':'阔叶草')))}
+
+el('go').onclick=function(){
+  var need=0;
+  ['shape','edge','vein','fl','stem'].forEach(function(k){if(ST[k])need++});
+  if(ST.hab.length)need++;
+  if(ST.tag.length)need++;
+  if(!ST.img&&need<2){alert('还没有照片，请至少再选 2 项特征再比对。');return}
+
+  var scored=DB.map(function(sp){return {sp:sp,r:scoreOne(sp)}}).filter(function(o){return o.r.total>0});
+  scored.sort(function(a,b){return b.r.total-a.r.total});
+
+  var cropBest=scored.filter(function(o){return o.sp.c==='作'})[0];
+  var weedBest=scored.filter(function(o){return o.sp.c!=='作'})[0];
+  var isCrop=cropBest&&cropBest.r.total>=50&&(!weedBest||cropBest.r.total>=weedBest.r.total);
+
+  var box=el('result');box.style.display='block';
+  var h='';
+  if(isCrop){
+    h+='<div class="cropbox"><div class="k">判 定 结 果</div>'+
+       '<div class="n">这是作物 · '+cropBest.sp.n+'</div>'+
+       '<div class="s">不像杂草，盲目用药会伤苗</div>'+
+       '<div class="why"><b>如何确认：</b>'+cropBest.sp.mg+'</div></div>';
+  }
+  var top1=scored[0];
+  var list=isCrop?scored.filter(function(o){return o.sp.c!=='作'}).slice(0,4):scored.slice(0,5);
+  var grassLike=top1&&(top1.sp.c==='禾'||top1.sp.c==='莎');
+  if(grassLike&&ST.tag.indexOf('有叶舌')<0&&ST.tag.indexOf('无叶舌')<0&&ST.tag.indexOf('有叶耳')<0){
+    h+='<div class="kq"><div class="t">关键一问 · 只差这一步</div>'+
+       '<div class="q">把叶鞘剥开，叶舌（叶片与叶鞘交界处那层薄膜/毛环）有没有？</div>'+
+       '<div class="bt"><button class="btn sm" data-kq="有叶舌">有 · 像水稻/作物</button>'+
+       '<button class="btn ghost sm" data-kq="无叶舌">没有 · 像稗草</button></div>'+
+       '<div class="h">禾本科/莎草科靠外形最难分，叶舌叶耳比颜色、株型都准。</div></div>';
+  }
+
+  h+='<div class="card" style="margin-top:14px"><div class="sect-title"><b>'+(isCrop?'最像的杂草候选':'识别结果')+'</b><span>按匹配度排序</span></div>';
+  list.forEach(function(o,i){
+    var v=Math.round(o.r.total),jd=judge(v);
+    h+='<div class="hit"><div class="hd">'+
+        '<div class="rk '+jd[1]+'">'+(i+1)+'</div>'+
+        '<div><div class="nm">'+o.sp.n+(o.sp.c==='作'?' <span class="tag" style="background:#fdeee4;color:#b8562c">作物</span>':'')+'</div>'+
+        '<div class="sub">'+(catName(o.sp)===o.sp.f?o.sp.f:catName(o.sp)+' · '+o.sp.f)+' · '+o.sp.s+'叶 · '+o.sp.v+'脉</div></div>'+
+        '<div class="score"><div class="v">'+v+'%</div><div class="l">'+jd[0]+'</div></div></div>'+
+      '<div class="bar"><i style="width:'+v+'%"></i></div>'+
+      '<div class="row"><b>识别要点：</b>'+o.sp.key+'</div>'+
+      '<div class="row"><b>近似种区分：</b>'+o.sp.dif+'</div>'+
+      '<div class="row"><b>'+(o.sp.c==='作'?'确认要点':'防除建议')+'：</b>'+o.sp.mg+'</div>'+
+      '<div class="row" style="margin-top:9px">'+o.sp.h.map(function(x2){return '<span class="tag">'+x2+'</span>'}).join('')+
+        o.sp.g.slice(0,3).map(function(x2){return '<span class="tag">'+x2+'</span>'}).join('')+'</div></div>';
+  });
+  if(!isCrop&&cropBest&&cropBest.r.total>=45){
+    h+='<div class="row" style="background:#fff7ec;border-radius:10px;padding:10px;color:#a86a12;font-size:12.5px;margin-top:12px">'+
+       '提示：作物候选「'+cropBest.sp.n+'」也拿到 '+Math.round(cropBest.r.total)+'%。如果这是田里成片整齐生长的，很可能就是作物，勾上「有叶舌 / 有叶耳 / 成片整齐」再判一次。</div>';
+  }
+  h+='<div class="note" style="margin-top:14px">匹配度低于 52% 说明与库内记录差异大：补拍叶片特写（叶鞘口、叶背、叶基）再试。</div></div>';
+  box.innerHTML=h;
+  Array.prototype.forEach.call(box.querySelectorAll('[data-kq]'),function(b){
+    b.onclick=function(){
+      var v=b.dataset.kq;
+      ['有叶舌','无叶舌'].forEach(function(x2){
+        var i=ST.tag.indexOf(x2);if(i>=0)ST.tag.splice(i,1);
+      });
+      if(ST.tag.length>=3)ST.tag.shift();
+      ST.tag.push(v);
+      Array.prototype.forEach.call(el('c-tag').children,function(c){
+        var on=ST.tag.indexOf(c.dataset.v)>=0;
+        c.classList.toggle('on',on);
+      });
+      el('go').onclick();
+    };
+  });
+  box.scrollIntoView({behavior:'smooth',block:'start'});
+};
+
+el('reset').onclick=function(){
+  ST={img:null,shape:'',edge:'',vein:'',fl:'',hab:[],stem:'',tag:[]};
+  el('prevBox').style.display='none';
+  el('prev').style.display='none';
+  el('drop').style.display='block';
+  el('feats').innerHTML='';
+  el('result').style.display='none';
+  el('result').innerHTML='';
+  Array.prototype.forEach.call(document.querySelectorAll('.chip'),function(c){c.classList.remove('on')});
+};
+
+var CAT='全部';
+function renderList(){
+  var q=(el('q').value||'').trim().toLowerCase();
+  var box=el('list');box.innerHTML='';
+  var hit=0;
+  DB.forEach(function(sp){
+    if(CAT!=='全部'){
+      var ok=sp.h.indexOf(CAT)>=0;
+      if(CAT==='禾本科')ok=(sp.f==='禾本科');
+      if(CAT==='菊科')ok=(sp.f==='菊科');
+      if(CAT==='作物')ok=(sp.c==='作');
+      if(!ok)return;
+    }
+    if(q){
+      var s=(sp.n+sp.a+sp.f+sp.key+sp.h.join('')+sp.s+sp.v).toLowerCase();
+      if(s.indexOf(q)<0)return;
+    }
+    hit++;
+    var d=document.createElement('div');d.className='item';
+    d.innerHTML='<div class="n">'+sp.n+(sp.c==='作'?'<span class="cropmark">作物</span>':'')+
+      '<span class="f">'+sp.f+' · '+sp.a+'</span></div>'+
+      '<div class="d">'+sp.key+'</div>'+
+      '<div class="detail">'+
+        '<div class="row"><b>叶形/叶缘/叶脉：</b>'+sp.s+' / '+sp.e+' / '+sp.v+'脉</div>'+
+        '<div class="row"><b>花：</b>'+(sp.fl==='无'?'不明显或未观察到':sp.fl+'色')+' · <b>株型：</b>'+sp.st+'</div>'+
+        '<div class="row"><b>生境：</b>'+sp.h.join('、')+'</div>'+
+        '<div class="row"><b>识别要点：</b>'+sp.key+'</div>'+
+        '<div class="row"><b>近似种区分：</b>'+sp.dif+'</div>'+
+        '<div class="row"><b>'+(sp.c==='作'?'确认要点':'防除建议')+'：</b>'+sp.mg+'</div></div>';
+    d.onclick=function(){d.classList.toggle('open')};
+    box.appendChild(d);
+  });
+  if(!hit)box.innerHTML='<div class="empty">没有匹配的条目，换个关键词试试</div>';
+}
+el('cnt').textContent=DB.length;
+(function(){
+  var cats=['全部','水田','旱地','园地','路边','禾本科','菊科','作物'];
+  var box=el('c-cat');
+  cats.forEach(function(c,i){
+    var d=document.createElement('div');
+    d.className='chip'+(i===0?' on':'');d.textContent=c;
+    d.onclick=function(){
+      Array.prototype.forEach.call(box.children,function(x2){x2.classList.remove('on')});
+      d.classList.add('on');CAT=c;renderList();
+    };
+    box.appendChild(d);
+  });
+})();
+el('q').oninput=renderList;
+renderList();
+
+Array.prototype.forEach.call(document.querySelectorAll('nav a'),function(a){
+  a.onclick=function(e){
+    e.preventDefault();
+    var p=a.dataset.p;
+    Array.prototype.forEach.call(document.querySelectorAll('nav a'),function(x2){x2.classList.toggle('act',x2===a)});
+    Array.prototype.forEach.call(document.querySelectorAll('.page'),function(x2){x2.classList.toggle('act',x2.id==='page-'+p)});
+    window.scrollTo(0,0);
+  };
+});
+</script>
+</body>
+</html>
